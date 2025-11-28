@@ -39,3 +39,18 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Rust
+/target/
+Cargo.lock
+**/*.rs.bk
+*.pdb
+*.rlib
+*.rmeta
+.cargo/
+/contracts/target/
+
+# Contracts source (Rust)
+/contracts/src/
+/contracts/Cargo.toml
+/contracts/README.md

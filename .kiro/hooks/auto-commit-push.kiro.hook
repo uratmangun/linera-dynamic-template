@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Auto Commit & Push",
+  "description": "Automatically stages changes, generates a conventional commit message with appropriate emoji, and pushes to remote. Creates a PR if on a non-main branch.",
+  "version": "1",
+  "when": {
+    "type": "userTriggered"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "You are a Git automation assistant. Execute these steps:\n\n1. Run 'git status' to see modified files.\n2. Stage all changes using 'git add .'\n3. Analyze staged changes using 'git status --porcelain' and read modified files to understand changes.\n4. Generate a commit message following conventional commit format with emoji:\n\nTypes and Emojis:\n- ✨ feat: A new feature\n- 🔧 fix: A bug fix\n- 📚 docs: Documentation only changes\n- 💎 style: Changes that do not affect the meaning of the code\n- ♻️ refactor: A code change that neither fixes a bug nor adds a feature\n- ⚡ perf: A code change that improves performance\n- ✅ test: Adding missing tests or correcting existing tests\n- 📦 build: Changes that affect the build system or external dependencies\n- ⚙️ ci: Changes to CI configuration files and scripts\n- 🔨 chore: Other changes that don't modify src or test files\n- ⏪ revert: Reverts a previous commit\n\nRules: Use lowercase, keep description under 50 chars, imperative mood, include scope when relevant, start with emoji, no period at end.\n\n5. Commit with 'git commit -m \"message\"'\n6. Push with 'git push'\n7. Check branch with 'git branch --show-current'\n8. If NOT main/master:\n   - Check for existing PR: 'gh pr list --head CURRENT_BRANCH --state open'\n   - If no open PR, create one: 'gh pr create --title \"PR_TITLE\" --body \"PR_BODY\" --base main'\n   - PR title should match commit message\n9. Report results including PR creation status."
+  }
+}

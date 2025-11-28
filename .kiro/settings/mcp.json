@@ -1,5 +1,16 @@
 {
   "mcpServers": {
+     "deepwiki": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@smithery/cli@latest",
+        "run",
+        "deepwiki",
+        "--key",
+        "04ceea26-a2b2-4a23-8597-2d5040a7e2bf"
+      ]
+    },
     "blockscout": {
       "url": "https://mcp.blockscout.com/mcp",
       "disabled": true
@@ -30,7 +41,16 @@
         "-y",
         "next-devtools-mcp@latest"
       ],
-      "disabled": false
+      "disabled": true,
+      "disabledTools": [
+        "browser_eval",
+        "enable_cache_components",
+        "init",
+        "nextjs_docs",
+        "nextjs_index",
+        "nextjs_call",
+        "upgrade_nextjs_16"
+      ]
     },
     "sequential-thinking": {
       "command": "npx",
