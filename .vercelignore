@@ -1,0 +1,15 @@
+# Rust contracts (not needed for Next.js deployment)
+contracts/
+
+# Development scripts
+scripts/
+
+# Agent/IDE configs
+.agent/
+.windsurf/
+.kiro/
+.vscode/
+
+# Documentation
+*.md
+!README.md

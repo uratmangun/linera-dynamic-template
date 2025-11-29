@@ -3,14 +3,31 @@
  *
  * This script deploys the Linera smart contract to the network.
  *
- * Usage: bun run contract:deploy [initial-value]
+ * Usage: bun run contract:deploy [--chain <chainId>] [initial-value]
  */
 
 import { linera } from "./linera-cli";
 import { existsSync } from "fs";
 import { join } from "path";
 
-async function deployContract(initialValue: string): Promise<void> {
+function parseArgs(): { chainId?: string; initialValue: string } {
+  const args = process.argv.slice(2);
+  let chainId: string | undefined;
+  let initialValue = "0";
+
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === "--chain" && args[i + 1]) {
+      chainId = args[i + 1];
+      i++; // Skip next arg
+    } else if (!args[i].startsWith("--")) {
+      initialValue = args[i];
+    }
+  }
+
+  return { chainId, initialValue };
+}
+
+async function deployContract(initialValue: string, chainId?: string): Promise<void> {
   console.log("\n========================================");
   console.log("   Linera Contract Deployment");
   console.log("========================================\n");
@@ -38,16 +55,22 @@ async function deployContract(initialValue: string): Promise<void> {
 
   try {
     console.log(`📦 Deploying contract with initial value: ${initialValue}`);
+    if (chainId) {
+      console.log(`   Chain ID: ${chainId}`);
+    }
     console.log(`   Contract: ${contractWasm}`);
     console.log(`   Service: ${serviceWasm}`);
 
-    const result = await linera([
-      "publish-and-create",
-      contractWasm,
-      serviceWasm,
-      "--json-argument",
-      initialValue,
-    ]);
+    const deployArgs = ["publish-and-create", contractWasm, serviceWasm];
+
+    // Chain ID is a positional argument (PUBLISHER), must come after service wasm
+    if (chainId) {
+      deployArgs.push(chainId);
+    }
+
+    deployArgs.push("--json-argument", initialValue);
+
+    const result = await linera(deployArgs);
 
     if (result.exitCode !== 0) {
       throw new Error(`Deployment failed: ${result.stderr}`);
@@ -69,5 +92,5 @@ async function deployContract(initialValue: string): Promise<void> {
 }
 
 // Main execution
-const initialValue = process.argv[2] || "0";
-deployContract(initialValue);
+const { chainId, initialValue } = parseArgs();
+deployContract(initialValue, chainId);
