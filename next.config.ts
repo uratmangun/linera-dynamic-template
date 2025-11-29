@@ -2,8 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
-  // Use Turbopack (default in Next.js 16)
-  turbopack: {},
   // Required for SharedArrayBuffer support (Linera WASM)
   async headers() {
     return [
@@ -26,7 +24,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  // Exclude @linera/client from server-side bundling - it's browser-only
+  // Exclude packages from server-side bundling - they're browser-only
   serverExternalPackages: ["@linera/client"],
 };
 

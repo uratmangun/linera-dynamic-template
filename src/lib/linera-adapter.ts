@@ -1,54 +1,12 @@
-import { ethers } from "ethers";
-
-// Dynamic imports for Linera client from public folder
-let lineraModule: any = null;
-
-async function loadLineraFromPublic() {
-  if (lineraModule) return lineraModule;
-
-  // Load from public folder to avoid bundler issues with WASM workers
-  const module = await import(/* webpackIgnore: true */ "/linera/linera_web.js");
-  lineraModule = module;
-  return module;
-}
-
-// Private key signer implementation using ethers.js
-// Based on the Linera PrivateKeySigner pattern
-class PrivateKeySigner {
-  private wallet: ethers.Wallet;
-
-  constructor(privateKey: string) {
-    this.wallet = new ethers.Wallet(privateKey);
-  }
-
-  static create(): PrivateKeySigner {
-    const wallet = ethers.Wallet.createRandom();
-    return new PrivateKeySigner(wallet.privateKey);
-  }
-
-  get address(): string {
-    return this.wallet.address;
-  }
-
-  async sign(owner: string, value: Uint8Array): Promise<string> {
-    // Validate owner matches our wallet address
-    if (owner.toLowerCase() !== this.wallet.address.toLowerCase()) {
-      throw new Error(`Owner ${owner} does not match signer address ${this.wallet.address}`);
-    }
-    // Sign using EIP-191 personal_sign
-    return await this.wallet.signMessage(value);
-  }
-
-  async containsKey(owner: string): Promise<boolean> {
-    return owner.toLowerCase() === this.wallet.address.toLowerCase();
-  }
-}
-
-// Re-export types for compatibility
-type Faucet = any;
-type Client = any;
-type Wallet = any;
-type Application = any;
+import type {
+  Faucet,
+  Client,
+  Wallet,
+  Application,
+} from "@linera/client";
+import type { Wallet as DynamicWallet } from "@dynamic-labs/sdk-react-core";
+import { DynamicSigner } from "./dynamic-signer";
+import { loadLinera } from "./linera-loader";
 
 const LINERA_RPC_URL = "https://faucet.testnet-conway.linera.net";
 const COUNTER_APP_ID =
@@ -58,6 +16,7 @@ export interface LineraProvider {
   client: Client;
   wallet: Wallet;
   faucet: Faucet;
+  address: string;
   chainId: string;
 }
 
@@ -65,7 +24,7 @@ export class LineraAdapter {
   private static instance: LineraAdapter | null = null;
   private provider: LineraProvider | null = null;
   private application: Application | null = null;
-  private wasmInitPromise: Promise<unknown> | null = null;
+
   private connectPromise: Promise<LineraProvider> | null = null;
   private onConnectionChange?: () => void;
 
@@ -76,57 +35,45 @@ export class LineraAdapter {
     return LineraAdapter.instance;
   }
 
-  async connect(rpcUrl?: string): Promise<LineraProvider> {
+  async connect(
+    dynamicWallet: DynamicWallet,
+    rpcUrl?: string
+  ): Promise<LineraProvider> {
     if (this.provider) return this.provider;
     if (this.connectPromise) return this.connectPromise;
 
+    if (!dynamicWallet) {
+      throw new Error("Dynamic wallet is required for Linera connection");
+    }
+
     try {
       this.connectPromise = (async () => {
-        console.log("🔗 Connecting to Linera...");
+        const { address } = dynamicWallet;
+        console.log("🔗 Connecting with Dynamic wallet:", address);
 
-        // Load Linera from public folder
-        const linera = await loadLineraFromPublic();
-
-        try {
-          if (!this.wasmInitPromise) this.wasmInitPromise = linera.default();
-          await this.wasmInitPromise;
-          console.log("✅ Linera WASM modules initialized successfully");
-        } catch (e) {
-          const msg = e instanceof Error ? e.message : String(e);
-          if (msg.includes("storage is already initialized")) {
-            console.warn(
-              "⚠️ Linera storage already initialized; continuing without re-init"
-            );
-          } else {
-            throw e;
-          }
-        }
+        // Load Linera from public folder to avoid file:// URL issues
+        const linera = await loadLinera();
+        console.log("✅ Linera WASM modules initialized successfully");
 
         const faucet = new linera.Faucet(rpcUrl || LINERA_RPC_URL);
         const wallet = await faucet.createWallet();
+        const chainId = await faucet.claimChain(wallet, address);
 
-        // Create a signer with a random private key
-        const signer = PrivateKeySigner.create();
-        console.log("📋 Signer address:", signer.address);
-
-        // Claim a chain from the faucet BEFORE creating the client
-        // (Client constructor consumes the wallet)
-        const chainId = await faucet.claimChain(wallet, signer.address);
-        console.log("✅ Chain claimed:", chainId);
-
-        // Create client with wallet, signer, and skip_process_inbox=false
-        // Note: Client constructor returns a Promise
-        const client = await new linera.Client(wallet, signer, false);
+        const signer = new DynamicSigner(dynamicWallet);
+        // Third parameter is skip_process_inbox (false = process inbox)
+        // Client constructor may return a Promise in WASM bindings
+        const client = await Promise.resolve(new linera.Client(wallet, signer, false));
         console.log("✅ Linera wallet created successfully!");
-        console.log("📋 Chain ID:", chainId);
+        console.log("🔍 Client methods:", Object.keys(client), typeof client.frontend);
 
         this.provider = {
           client,
           wallet,
           faucet,
           chainId,
+          address: dynamicWallet.address,
         };
-        console.log("🔄 Notifying connection state change (chain connected)");
+
         this.onConnectionChange?.();
         return this.provider;
       })();
@@ -144,17 +91,17 @@ export class LineraAdapter {
     }
   }
 
+
   async setApplication(appId?: string) {
     if (!this.provider) throw new Error("Not connected to Linera");
 
-    const application = await (this.provider.client as any)
+    const application = await this.provider.client
       .frontend()
       .application(appId || COUNTER_APP_ID);
 
     if (!application) throw new Error("Failed to get application");
     console.log("✅ Linera application set successfully!");
     this.application = application;
-    console.log("🔄 Notifying connection state change (app set)");
     this.onConnectionChange?.();
   }
 

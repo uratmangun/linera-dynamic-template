@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
@@ -17,6 +17,8 @@
     "contract:interact": "bun run scripts/contract-interact.ts"
   },
   "dependencies": {
+    "@dynamic-labs/ethereum": "^4.47.3",
+    "@dynamic-labs/sdk-react-core": "^4.47.3",
     "@linera/client": "^0.15.6",
     "ethers": "^6.15.0",
     "next": "16.0.4",

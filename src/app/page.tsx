@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useDynamicContext, useIsLoggedIn } from "@dynamic-labs/sdk-react-core";
+import { DynamicWidget } from "@dynamic-labs/sdk-react-core";
 import { lineraAdapter, type LineraProvider } from "@/lib/linera-adapter";
 
 interface BlockLog {
@@ -9,6 +11,8 @@ interface BlockLog {
 }
 
 export default function Home() {
+  const { primaryWallet } = useDynamicContext();
+  const isLoggedIn = useIsLoggedIn();
   const [mounted, setMounted] = useState(false);
   const [count, setCount] = useState(0);
   const [chainId, setChainId] = useState<string | null>(null);
@@ -39,13 +43,18 @@ export default function Home() {
     }
   }, []);
 
-  // Connect to Linera chain
+  // Connect to Linera chain using Dynamic wallet
   async function handleConnect() {
+    if (!primaryWallet) {
+      setError("No wallet connected. Please connect a wallet to sign Linera transactions.");
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
     try {
-      const provider = await lineraAdapter.connect();
+      const provider = await lineraAdapter.connect(primaryWallet);
       providerRef.current = provider;
       setChainConnected(true);
       setChainId(provider.chainId);
@@ -76,9 +85,13 @@ export default function Home() {
 
   // Subscribe to notifications when connected
   useEffect(() => {
-    const provider = providerRef.current;
-    const client = provider?.client;
-    if (!client) return;
+    if (!chainConnected || !providerRef.current) return;
+
+    const client = providerRef.current.client;
+    if (!client || typeof client.onNotification !== 'function') {
+      console.warn('Client or onNotification not available');
+      return;
+    }
 
     const handler = (notification: unknown) => {
       const newBlock: BlockLog | undefined = (
@@ -89,8 +102,14 @@ export default function Home() {
       getCount();
     };
 
-    client.onNotification(handler);
-    return () => client.onNotification(() => {});
+    try {
+      client.onNotification(handler);
+    } catch (err) {
+      console.error('Failed to set notification handler:', err);
+    }
+
+    // Note: There's no unsubscribe method in the API, so we just return empty cleanup
+    return () => { };
   }, [chainConnected, getCount]);
 
   // Increment counter
@@ -109,10 +128,11 @@ export default function Home() {
       <div className="w-full max-w-3xl px-6 py-12">
         <div className="rounded-xl bg-white p-8 shadow-lg dark:bg-zinc-900">
           {/* Header */}
-          <div className="mb-8">
+          <div className="mb-8 flex items-center justify-between">
             <h1 className="text-3xl font-bold text-zinc-900 dark:text-white">
               Linera Counter
             </h1>
+            <DynamicWidget />
           </div>
 
           {/* Description */}
@@ -122,7 +142,7 @@ export default function Home() {
               remembers the value of an integer counter.
             </p>
             <p className="mb-2 text-zinc-600 dark:text-zinc-400">
-              Click "Connect to Linera" to create a new wallet and claim a chain from the testnet faucet.
+              Connect your wallet using Dynamic, then click "Connect to Linera" to claim a chain from the testnet faucet.
             </p>
             <p className="text-zinc-600 dark:text-zinc-400">
               Then click the button to increment the counter.
@@ -145,7 +165,7 @@ export default function Home() {
               </p>
             )}
 
-            {mounted && !chainConnected && (
+            {mounted && isLoggedIn && !chainConnected && (
               <button
                 type="button"
                 onClick={handleConnect}
@@ -154,6 +174,12 @@ export default function Home() {
               >
                 {isLoading ? "Connecting…" : "Connect to Linera"}
               </button>
+            )}
+
+            {mounted && !isLoggedIn && !chainConnected && (
+              <p className="text-zinc-500 dark:text-zinc-400">
+                Please connect your wallet using the button above to get started.
+              </p>
             )}
 
             {chainConnected && !appConnected && (
