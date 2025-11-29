@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Linera Dynamic Template
+
+A Next.js template for building dApps with [Dynamic](https://dynamic.xyz) wallet authentication and [Linera](https://linera.io) blockchain smart contract interaction.
+
+## Features
+
+- 🔐 Dynamic wallet login integration
+- ⛓️ Linera blockchain smart contract interaction
+- ⚡ Next.js 16 with React 19
+- 🎨 Tailwind CSS styling
+- 📦 Example counter smart contract (Rust/WASM)
+
+## Use This Template
+
+### Option 1: GitHub UI
+Click the "Use this template" button on GitHub to create a new repository.
+
+### Option 2: GitHub CLI
+```bash
+gh repo create my-linera-app --template uratmangun/linera-dynamic-template --clone
+cd my-linera-app
+pnpm install
+```
 
 ## Getting Started
 
-First, run the development server:
-
+1. Clone and install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Copy the environment file and add your Dynamic environment ID:
+```bash
+cp .env.example .env.local
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Get your Dynamic environment ID from [Dynamic Dashboard](https://app.dynamic.xyz) and update `.env.local`:
+```
+NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID=your-dynamic-environment-id-here
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Start the development server:
+```bash
+pnpm dev
+```
 
-## Learn More
+Open [http://localhost:3000](http://localhost:3000) to see the app.
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+├── src/
+│   ├── app/           # Next.js app router pages
+│   └── lib/           # Linera adapter and utilities
+├── contracts/         # Rust smart contracts (WASM)
+├── scripts/           # CLI scripts for wallet and contract management
+└── public/            # Static assets
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Scripts
 
-## Deploy on Vercel
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Start development server |
+| `pnpm build` | Build for production |
+| `pnpm wallet:init` | Initialize Linera wallet |
+| `pnpm wallet:show` | Show wallet info |
+| `pnpm wallet:balance` | Check wallet balance |
+| `pnpm contract:build` | Build smart contract |
+| `pnpm contract:deploy` | Deploy smart contract |
+| `pnpm contract:interact` | Interact with deployed contract |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Smart Contract
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The template includes an example counter smart contract in `contracts/`. See [contracts/README.md](contracts/README.md) for details.
+
+## Tech Stack
+
+- [Next.js 16](https://nextjs.org) - React framework
+- [Dynamic](https://dynamic.xyz) - Wallet authentication
+- [Linera](https://linera.io) - Blockchain platform
+- [Tailwind CSS](https://tailwindcss.com) - Styling
+- [Biome](https://biomejs.dev) - Linting and formatting
+
+## License
+
+MIT
