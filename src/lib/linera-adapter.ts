@@ -62,7 +62,7 @@ export class LineraAdapter {
         const signer = new DynamicSigner(dynamicWallet);
         // Third parameter is skip_process_inbox (false = process inbox)
         // Client constructor may return a Promise in WASM bindings
-        const client = await Promise.resolve(new linera.Client(wallet, signer, false));
+        const client = await Promise.resolve(new linera.Client(wallet, signer, true));
         console.log("✅ Linera wallet created successfully!");
         console.log("🔍 Client methods:", Object.keys(client), typeof client.frontend);
 

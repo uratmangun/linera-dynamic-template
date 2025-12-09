@@ -22,24 +22,24 @@ description: "Enforces standardized auto commit and push workflow with conventio
 ### Commit Message Format
 
 ```
-<emoji> <type>(<scope>): <description>
+<type>(<scope>): <emoji> <description>
 [optional body]
 [optional footer(s)]
 ```
 
 ### Types and Emojis
 
-- ✨ feat: A new feature
-- 🔧 fix: A bug fix
-- 📚 docs: Documentation only changes
-- 💎 style: Changes that do not affect the meaning of the code
-- ♻️ refactor: A code change that neither fixes a bug nor adds a feature
-- ⚡ perf: A code change that improves performance
-- ✅ test: Adding missing tests or correcting existing tests
-- 📦 build: Changes that affect the build system or external dependencies
-- ⚙️ ci: Changes to CI configuration files and scripts
-- 🔨 chore: Other changes that don't modify src or test files
-- ⏪ revert: Reverts a previous commit
+- feat: ✨ A new feature
+- fix: 🔧 A bug fix
+- docs: 📚 Documentation only changes
+- style: 💎 Changes that do not affect the meaning of the code
+- refactor: ♻️ A code change that neither fixes a bug nor adds a feature
+- perf: ⚡ A code change that improves performance
+- test: ✅ Adding missing tests or correcting existing tests
+- build: 📦 Changes that affect the build system or external dependencies
+- ci: ⚙️ Changes to CI configuration files and scripts
+- chore: 🔨 Other changes that don't modify src or test files
+- revert: ⏪ Reverts a previous commit
 
 ### Commit Message Rules
 
@@ -47,7 +47,7 @@ description: "Enforces standardized auto commit and push workflow with conventio
 2. Keep the description under 50 characters when possible
 3. Use imperative mood ("add" not "added" or "adds")
 4. Include scope when relevant (component, module, or area affected)
-5. Always start with the appropriate emoji
+5. Always place the emoji after the colon, before the description
 6. No period at the end of the description
 7. Use body for additional context if needed (separate with blank line)
 
@@ -61,7 +61,7 @@ For breaking changes, add `!` after the type/scope and include `BREAKING CHANGE:
 git status
 git add .
 git status --porcelain
-git commit -m "✨ feat(auth): add user authentication system"
+git commit -m "feat(auth): ✨ add user authentication system"
 git push
 ```
 
