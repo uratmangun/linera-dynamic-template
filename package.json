@@ -21,9 +21,9 @@
     "@dynamic-labs/sdk-react-core": "^4.47.3",
     "@linera/client": "^0.15.6",
     "ethers": "^6.15.0",
-    "next": "16.0.4",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
+    "next": "^16.0.8",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
     "zod": "^4.1.13"
   },
   "devDependencies": {
