@@ -33,6 +33,23 @@ export default function CounterApp() {
         setAppConnected(lineraAdapter.isApplicationSet());
     }, []);
 
+    // Reset Linera adapter when Dynamic wallet disconnects
+    useEffect(() => {
+        if (!isLoggedIn || !primaryWallet) {
+            // User logged out or wallet disconnected - reset Linera state
+            lineraAdapter.reset();
+            providerRef.current = null;
+            setChainConnected(false);
+            setAppConnected(false);
+            setChainId(null);
+            setLogs([]);
+            setCount(0);
+            setError(null);
+            setApplicationId("");
+            setTargetChainId("");
+        }
+    }, [isLoggedIn, primaryWallet]);
+
     const getCount = useCallback(async () => {
         try {
             const result = await lineraAdapter.queryApplication<{
