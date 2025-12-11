@@ -1,6 +1,5 @@
 ---
-name: "Development Server Manual Start Policy"
-trigger: always_on
+alwaysApply: true
 description: "Never automatically start development servers for web applications"
 ---
 
@@ -31,4 +30,3 @@ description: "Never automatically start development servers for web applications
 # Don't auto-run: npm start
 # Instead suggest: "Run 'npm start' to start the development server"
 ```
-

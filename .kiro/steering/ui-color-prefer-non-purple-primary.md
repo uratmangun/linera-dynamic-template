@@ -1,7 +1,5 @@
 ---
-name: "UI Color Palette Preference"
-trigger: always_on
-description: "Prefer non-purple as primary UI color; purple only as accent/secondary unless brand requires it"
+inclusion: always
 ---
 
 # UI Color Palette Preference

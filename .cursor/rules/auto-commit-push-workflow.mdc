@@ -1,6 +1,5 @@
 ---
-name: "Auto Commit and Push Workflow"
-trigger: always_on
+alwaysApply: true
 description: "Enforces standardized auto commit and push workflow with conventional commit messages and emojis"
 ---
 
@@ -67,4 +66,3 @@ git push
 ```
 
 This ensures consistent, descriptive commit messages that follow conventional commit standards while maintaining clear project history.
-

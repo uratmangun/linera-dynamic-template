@@ -1,6 +1,5 @@
 ---
-name: "UI Color Palette Preference"
-trigger: always_on
+alwaysApply: true
 description: "Prefer non-purple as primary UI color; purple only as accent/secondary unless brand requires it"
 ---
 
@@ -49,4 +48,3 @@ description: "Prefer non-purple as primary UI color; purple only as accent/secon
 ### Rationale
 
 This ensures consistent visual identity aligned with the requested preference while allowing purple as a tasteful accent when needed.
-

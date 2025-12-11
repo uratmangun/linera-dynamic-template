@@ -1,7 +1,5 @@
 ---
-name: "Development Server Manual Start Policy"
-trigger: always_on
-description: "Never automatically start development servers for web applications"
+inclusion: always
 ---
 
 # Development Server Manual Start Policy

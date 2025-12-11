@@ -1,7 +1,5 @@
 ---
-name: "Auto Commit and Push Workflow"
-trigger: always_on
-description: "Enforces standardized auto commit and push workflow with conventional commit messages and emojis"
+inclusion: always
 ---
 
 # Auto Commit and Push Workflow
