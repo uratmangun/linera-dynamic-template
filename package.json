@@ -7,14 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
-    "format": "biome format --write",
-    "create-wallet": "bun run scripts/create-wallet.ts",
-    "wallet:init": "bun run scripts/wallet-init.ts",
-    "wallet:show": "bun run scripts/wallet-show.ts",
-    "wallet:balance": "bun run scripts/wallet-balance.ts",
-    "contract:build": "bun run scripts/build-contract.ts",
-    "contract:deploy": "bun run scripts/deploy-contract.ts",
-    "contract:interact": "bun run scripts/contract-interact.ts"
+    "format": "biome format --write"
   },
   "dependencies": {
     "@dynamic-labs/ethereum": "^4.52.2",

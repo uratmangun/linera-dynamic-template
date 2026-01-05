@@ -1,23 +1,40 @@
-# Counter Smart Contract
+# Linera Smart Contracts
 
-A simple Linera smart contract example that implements a counter with increment, decrement, and reset operations.
+This folder contains Linera smart contracts. Each contract is organized as a separate subfolder following the standard Linera project structure.
 
-## Project Structure
+## Structure
 
 ```
 contracts/
-├── Cargo.toml          # Project dependencies
-├── src/
-│   ├── lib.rs          # Shared types (state, operations, messages, ABI)
-│   ├── contract.rs     # Contract binary (handles state modifications)
-│   └── service.rs      # Service binary (handles GraphQL queries)
-└── README.md
+├── README.md
+├── counter/                    # Simple counter contract
+│   ├── Cargo.toml
+│   ├── rust-toolchain.toml
+│   └── src/
+│       ├── lib.rs              # ABI definitions
+│       ├── state.rs            # Application state
+│       ├── contract.rs         # Contract logic (mutations)
+│       └── service.rs          # Service logic (queries)
+└── <future_contract>/          # Add more contracts here
 ```
 
-## Building
+## Creating a New Contract
+
+Use the Linera CLI to scaffold a new contract:
 
 ```bash
-# Build for WebAssembly
+cd contracts
+linera project new my_new_contract
+```
+
+This creates the standard structure with all necessary files.
+
+## Building Contracts
+
+Build a specific contract:
+
+```bash
+cd contracts/counter
 cargo build --release --target wasm32-unknown-unknown
 ```
 
@@ -25,60 +42,41 @@ The compiled WASM files will be in:
 - `target/wasm32-unknown-unknown/release/counter_contract.wasm`
 - `target/wasm32-unknown-unknown/release/counter_service.wasm`
 
-## Deploying
+## Deploying Contracts
+
+Deploy using the Linera CLI:
 
 ```bash
-# Deploy to a Linera network
-linera publish-and-create \
-  target/wasm32-unknown-unknown/release/counter_contract.wasm \
-  target/wasm32-unknown-unknown/release/counter_service.wasm \
-  --json-argument "0"
+linera project publish-and-create contracts/counter --json-argument "0"
 ```
 
-## Operations
+Save the returned Application ID for frontend integration.
 
-The contract supports the following operations:
+## Current Contracts
 
-- **Increment**: Add a value to the counter
-  ```json
-  { "Increment": { "amount": 10 } }
-  ```
+### counter
 
-- **Decrement**: Subtract a value from the counter
-  ```json
-  { "Decrement": { "amount": 5 } }
-  ```
+A simple counter application demonstrating basic Linera smart contract functionality with cross-chain sync support.
 
-- **Reset**: Reset the counter to zero
-  ```json
-  "Reset"
-  ```
+**Operations:**
+- `Increment { amount }` - Increment the counter by a specified amount
+- `Decrement { amount }` - Decrement the counter by a specified amount
+- `Reset` - Reset the counter to zero
+- `SyncTo { target_chain }` - Sync the current counter value to another chain
 
-## GraphQL Queries
+**Messages:**
+- `SyncValue { value }` - Cross-chain message to sync counter value
 
-Query the current counter value:
+**Queries:**
+- `value` - Get the current counter value
 
-```graphql
-query {
-  value
-}
-```
+**Mutations:**
+- `increment(amount)` - Schedule increment operation
+- `decrement(amount)` - Schedule decrement operation
+- `reset()` - Schedule reset operation
+- `syncTo(targetChain)` - Schedule cross-chain sync
 
-## Cross-Chain Messages
-
-The contract supports syncing values across chains via the `SyncValue` message.
-
-### Sync to Another Chain
-
-Use the `syncTo` mutation to send the current counter value to another chain:
-
-```graphql
-mutation {
-  syncTo(targetChain: "e476187f6ddfeb9d588c7b45d3df334d5501d6499b3f9ad5595cae86cce16a65")
-}
-```
-
-This will:
-1. Read the current counter value on your chain
-2. Send a `SyncValue` message to the target chain
-3. The target chain will update its counter to match your value
+**Features:**
+- **Basic Operations**: Increment, decrement, and reset counter
+- **Cross-chain Sync**: Sync counter value to other chains via messages
+- **Saturating Arithmetic**: Prevents overflow/underflow

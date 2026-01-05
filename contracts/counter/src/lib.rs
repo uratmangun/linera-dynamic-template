@@ -2,23 +2,27 @@
 //!
 //! This module defines the shared types used by both the contract and service.
 
-use async_graphql::SimpleObject;
+use async_graphql::{Request, Response};
 use linera_sdk::{
-    linera_base_types::ChainId,
-    views::{RegisterView, RootView, ViewStorageContext},
+    graphql::GraphQLMutationRoot,
+    linera_base_types::{ChainId, ContractAbi, ServiceAbi},
 };
 use serde::{Deserialize, Serialize};
 
-/// The application state stored on-chain.
-/// Uses RegisterView to persist a single u64 counter value.
-#[derive(RootView, SimpleObject)]
-#[view(context = ViewStorageContext)]
-pub struct Counter {
-    pub value: RegisterView<u64>,
+pub struct CounterAbi;
+
+impl ContractAbi for CounterAbi {
+    type Operation = Operation;
+    type Response = u64;
+}
+
+impl ServiceAbi for CounterAbi {
+    type Query = Request;
+    type QueryResponse = Response;
 }
 
 /// Operations that can be submitted by users to modify the counter.
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, GraphQLMutationRoot)]
 pub enum Operation {
     /// Increment the counter by a specified amount
     Increment { amount: u64 },
@@ -35,17 +39,4 @@ pub enum Operation {
 pub enum Message {
     /// Sync the counter value to another chain
     SyncValue { value: u64 },
-}
-
-/// The Application Binary Interface (ABI) for the counter application.
-pub struct CounterAbi;
-
-impl linera_sdk::abi::ContractAbi for CounterAbi {
-    type Operation = Operation;
-    type Response = u64;
-}
-
-impl linera_sdk::abi::ServiceAbi for CounterAbi {
-    type Query = async_graphql::Request;
-    type QueryResponse = async_graphql::Response;
 }

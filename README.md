@@ -53,7 +53,6 @@ Open [http://localhost:3000](http://localhost:3000) to see the app.
 │   ├── app/           # Next.js app router pages
 │   └── lib/           # Linera adapter and utilities
 ├── contracts/         # Rust smart contracts (WASM)
-├── scripts/           # CLI scripts for wallet and contract management
 └── public/            # Static assets
 ```
 
@@ -63,12 +62,38 @@ Open [http://localhost:3000](http://localhost:3000) to see the app.
 |---------|-------------|
 | `pnpm dev` | Start development server |
 | `pnpm build` | Build for production |
-| `pnpm wallet:init` | Initialize Linera wallet |
-| `pnpm wallet:show` | Show wallet info |
-| `pnpm wallet:balance` | Check wallet balance |
-| `pnpm contract:build` | Build smart contract |
-| `pnpm contract:deploy` | Deploy smart contract |
-| `pnpm contract:interact` | Interact with deployed contract |
+| `pnpm lint` | Run linter |
+| `pnpm format` | Format code |
+
+## Linera CLI Commands
+
+### Wallet Management
+
+```bash
+# Initialize wallet with devnet faucet
+linera wallet init --faucet https://faucet.testnet-conway.linera.net
+
+# Show wallet info
+linera wallet show
+
+# Check wallet balance
+linera wallet balance
+```
+
+### Smart Contract
+
+```bash
+# Build contract
+cd contracts/counter
+cargo build --release --target wasm32-unknown-unknown
+
+# Deploy contract (from project root)
+linera project publish-and-create contracts/counter --json-argument "0"
+
+# Interact with contract via GraphQL
+linera service --port 8080
+# Then open http://localhost:8080 in browser
+```
 
 ## Smart Contract
 
