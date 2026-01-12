@@ -10,13 +10,14 @@
     "format": "biome format --write"
   },
   "dependencies": {
-    "@dynamic-labs/ethereum": "^4.52.2",
-    "@dynamic-labs/sdk-react-core": "^4.52.2",
     "@linera/client": "^0.15.8",
-    "ethers": "^6.15.0",
+    "@rainbow-me/rainbowkit": "^2.2.10",
+    "@tanstack/react-query": "^5.90.16",
     "next": "16.0.9",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
+    "viem": "2.x",
+    "wagmi": "^3.3.2",
     "zod": "^4.1.13"
   },
   "devDependencies": {
