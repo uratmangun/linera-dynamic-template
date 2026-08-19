@@ -49,3 +49,24 @@ next-env.d.ts
 *.rmeta
 .cargo/
 /contracts/target/
+
+# --- cascade-archive ---
+node_modules/
+.next/
+.turbo/
+dist/
+build/
+coverage/
+out/
+.venv/
+venv/
+__pycache__/
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+!.env.example.*
+credentials.json
+*.pem
+*.sst
